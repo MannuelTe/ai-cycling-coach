@@ -91,6 +91,14 @@ Check in after key sessions and tell it about life: travel, bad sleep, a group r
 out of hand. Argue when something looks wrong. It's usually worth it, and your corrections
 become rules the coach follows from then on.
 
+## Coaching other athletes
+
+Your own API key works for every athlete who accepted you as coach on intervals.icu.
+`python3 scripts/roster.py` lists them, `python3 scripts/roster.py add anna i123456` adds one,
+then tell the agent "Onboard anna" and answer for them. Athletes reach the coach through what they
+write in intervals.icu, including the weekly `Check-in` notes the agent puts on their calendar.
+Get their OK first: their health data goes to your AI provider.
+
 ## How it works
 
 | File | What it is |
@@ -100,8 +108,10 @@ become rules the coach follows from then on.
 | `METHOD.md` | The coaching method: how the approach is chosen and the principles behind it. |
 | `RESEARCH.md` | Experimental, opt-in: a quarterly review of new sports science papers. |
 | `athlete/` | Your profile, season plan, check-ins and decisions. The coach's memory. |
+| `athletes/` | Coach mode: `roster.csv` plus one folder like `athlete/` per athlete. Gitignored. |
 | `scripts/check_plan.py` | Read-only status: fitness, load, wellness, 14 days planned vs done, the week ahead. |
 | `scripts/best_efforts.py` | Best power windows in a ride with their heart rate. |
+| `scripts/roster.py` | Coach mode: list the athletes you coach, add one to the roster. |
 | `scripts/intervals_common.py` | The small intervals.icu API wrapper the agent uses. |
 | `tests/` | `python3 -m unittest`. Live tests run when `.env` is set; `RUN_WRITE_TESTS=1` also checks writing to the calendar. |
 | `logs/errors.log` | API errors and problems the agent noticed. Local only. |

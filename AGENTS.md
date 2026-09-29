@@ -18,6 +18,20 @@ plan**. The files in `athlete/` are your memory between sessions. `METHOD.md` is
 
 Read `METHOD.md` once per session if you haven't already. It explains why the rules below exist.
 
+## Coach mode (several athletes)
+If `athletes/roster.csv` exists, you're talking to a **coach**, not the athlete.
+- Start with `python3 scripts/roster.py`, then confirm which athlete. Name them in every reply.
+- For that athlete, `athlete/` in these docs means `athletes/<name>/`, and scripts run as
+  `ATHLETE=<name> python3 scripts/...`.
+- **Never mix athletes.** On a switch, re-read the new athlete's files first.
+- The athlete's own voice comes from intervals.icu: ride descriptions, RPE and feel, wellness
+  comments and `Check-in` notes (all shown by `check_plan.py`), plus activity comments
+  (`api_get("/activity/{id}/messages")`). What the coach says is the coach's view.
+- Each week, put one or two empty NOTE events named `Check-in` on the calendar for the athlete to
+  fill in. If one is still empty a day later, suggest the coach nudges them.
+- A **403 on a write** means view-only access. Tell the coach to ask for edit access.
+- New athlete: `python3 scripts/roster.py add <name> <athlete_id>`, then `ONBOARDING.md`.
+
 ## Planning horizons
 - **Season**: `athlete/SEASON_PLAN.md` plus RACE and NOTE events on the calendar (races, trips, life).
 - **Block (3–8 weeks)**: `athlete/BLOCK_<name>.md` describes the design; the sessions live on the calendar.

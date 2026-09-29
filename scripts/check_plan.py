@@ -7,22 +7,24 @@ Usage:
     python3 scripts/check_plan.py            # status as of today
     python3 scripts/check_plan.py 2026-01-15 # pretend "today" is this date
 
+    ATHLETE=anna python3 scripts/check_plan.py  # coach mode: one athlete from the roster
+
 Needs INTERVALS_API_KEY and INTERVALS_ATHLETE_ID in .env (see .env.example).
 """
-import sys, csv, datetime
+import os, sys, csv, datetime
 from pathlib import Path
-from intervals_common import athlete_get, ROOT
+from intervals_common import athlete_get, athlete_dir
 
 LOOKBACK_DAYS = 14
 LOOKAHEAD_DAYS = 7
 
-CURVE_FILE = ROOT / "athlete" / "lactate_curve.csv"
+CURVE_FILE = athlete_dir() / "lactate_curve.csv"
 
 
 def load_curve(path=CURVE_FILE):
     """Your lab (or field) HR-vs-power curve as [(watts, hr), ...], low -> high.
 
-    Read from athlete/lactate_curve.csv (header: watts,hr). Returns [] if the file is
+    Read from lactate_curve.csv in the athlete's folder (header: watts,hr). Returns [] if the file is
     missing, and the HR-vs-curve check is then skipped.
     """
     path = Path(path)
@@ -74,6 +76,28 @@ def fmt_act(a):
     return "  ".join(parts)
 
 
+FEEL = {1: "strong", 2: "good", 3: "normal", 4: "poor", 5: "weak"}  # intervals.icu's 1-5 scale
+
+
+def athlete_notes(a):
+    """What the athlete wrote or rated on the activity: RPE, feel and the description."""
+    parts = []
+    if a.get("icu_rpe"):
+        parts.append(f"RPE {a['icu_rpe']}/10")
+    if a.get("feel"):
+        parts.append(f"feel {FEEL.get(a['feel'], a['feel'])}")
+    desc = " ".join((a.get("description") or "").split())
+    if desc:
+        parts.append(f'"{desc[:120]}"' + ("..." if len(desc) > 120 else ""))
+    return "  ".join(parts)
+
+
+def checkin_notes(notes):
+    """{date: text} for NOTE events named "Check-in". Text is "" until the athlete writes in it."""
+    return {e["start_date_local"][:10]: " ".join((e.get("description") or "").split())
+            for e in notes if (e.get("name") or "").strip().lower() == "check-in"}
+
+
 def possible_duplicates(acts):
     """Pairs of same-day activities with ~same duration (<90 s apart) and TSS (<=3 apart).
 
@@ -94,6 +118,9 @@ def main():
     start = today - datetime.timedelta(days=LOOKBACK_DAYS)
     end = today + datetime.timedelta(days=LOOKAHEAD_DAYS)
 
+    if os.environ.get("ATHLETE"):
+        print(f"Athlete: {os.environ['ATHLETE']}")
+
     # Wellness trend (last 7 days)
     wstart = today - datetime.timedelta(days=6)
     well = athlete_get(f"/wellness?oldest={wstart}&newest={today}") or []
@@ -108,8 +135,9 @@ def main():
         for d in well:
             sleep = d.get("sleepSecs")
             sleep_s = f"sleep {sleep / 3600:.1f}h" if sleep else ""
+            note = f'  "{d["comments"]}"' if d.get("comments") else ""
             print(f"  {d['id']}  restHR {d.get('restingHR') or '-':>3}  "
-                  f"HRV {d.get('hrv') or '-':>4}  {sleep_s}")
+                  f"HRV {d.get('hrv') or '-':>4}  {sleep_s}{note}")
     print()
 
     planned = [e for e in (athlete_get(
@@ -118,6 +146,8 @@ def main():
     plan_by_date = {}
     for e in planned:
         plan_by_date.setdefault(e["start_date_local"][:10], []).append(e)
+
+    checkins = checkin_notes(athlete_get(f"/events?oldest={start}&newest={end}&category=NOTE") or [])
 
     acts = athlete_get(f"/activities?oldest={start}&newest={today}") or []
     acts_by_date = {}
@@ -130,13 +160,17 @@ def main():
     while d <= today:
         ds = d.isoformat()
         plans, dones = plan_by_date.get(ds, []), acts_by_date.get(ds, [])
-        if plans or dones:
+        if plans or dones or ds in checkins:
             plan_s = " + ".join(f"{e['name']} ({load_of(e)} TSS)" for e in plans) or "(nothing planned)"
             print(f"  {ds}  plan: {plan_s}")
             for a in dones:
                 print(f"              done: {(a.get('name') or '(unnamed)')[:40]:40}  {fmt_act(a)}")
-            if not dones and d < today:
+                if athlete_notes(a):
+                    print(f"                    notes: {athlete_notes(a)}")
+            if plans and not dones and d < today:
                 print("              done: MISSED")
+            if ds in checkins:
+                print(f"              check-in: {checkins[ds] or '(not filled in yet)'}")
             for _ in possible_duplicates(dones):
                 print("              ** POSSIBLE DUPLICATE above — verify before trusting CTL/ATL **")
         d += datetime.timedelta(days=1)
@@ -149,6 +183,8 @@ def main():
         for e in plan_by_date.get(d.isoformat(), []):
             print(f"  {d}  {e['name']} ({load_of(e)} TSS)")
             any_up = True
+        if d.isoformat() in checkins:
+            print(f"  {d}  check-in: {checkins[d.isoformat()] or '(not filled in yet)'}")
         d += datetime.timedelta(days=1)
     if not any_up:
         print("  (nothing planned — the calendar needs the next block)")

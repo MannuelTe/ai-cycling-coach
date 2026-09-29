@@ -1,8 +1,11 @@
 """Offline tests. No API key or network needed: python3 -m unittest"""
-import tempfile, unittest
+import os, tempfile, unittest
 from pathlib import Path
+from unittest import mock
 
 import check_plan
+import intervals_common
+import roster
 from best_efforts import best_window
 from intervals_common import blank_steps
 
@@ -73,6 +76,67 @@ class WorkoutSteps(unittest.TestCase):
     def test_all_steps_have_targets(self):
         event = {"workout_doc": {"steps": [{"duration": 600, "power": {"value": 200}}]}}
         self.assertEqual(blank_steps(event), [])
+
+
+class CoachMode(unittest.TestCase):
+    def setUp(self):
+        d = tempfile.TemporaryDirectory()
+        self.addCleanup(d.cleanup)
+        self.roster = Path(d.name) / "roster.csv"
+        self.roster.write_text("name,athlete_id\nanna,i111\nben,i222\n")
+        self.addCleanup(mock.patch.stopall)
+        mock.patch.object(intervals_common, "ROSTER", self.roster).start()
+        mock.patch.dict(os.environ, {"INTERVALS_ATHLETE_ID": "i999"}).start()
+        os.environ.pop("ATHLETE", None)
+
+    def test_without_athlete_everything_is_single_athlete(self):
+        self.assertEqual(intervals_common.athlete_id(), "i999")
+        self.assertEqual(intervals_common.athlete_dir().name, "athlete")
+
+    def test_athlete_picks_id_and_folder_from_roster(self):
+        os.environ["ATHLETE"] = "ben"
+        self.assertEqual(intervals_common.athlete_id(), "i222")
+        self.assertEqual(intervals_common.athlete_dir().parts[-2:], ("athletes", "ben"))
+
+    def test_unknown_athlete_stops(self):
+        os.environ["ATHLETE"] = "carla"
+        with self.assertRaises(SystemExit):
+            intervals_common.athlete_id()
+
+    def test_every_roster_id_is_redacted(self):
+        text = intervals_common._redact("/athlete/i111/events and /athlete/i222 and i999")
+        self.assertNotIn("i111", text)
+        self.assertNotIn("i222", text)
+        self.assertNotIn("i999", text)
+
+
+class AthleteNotes(unittest.TestCase):
+    def test_rpe_feel_and_description(self):
+        a = {"icu_rpe": 7, "feel": 2, "description": "legs heavy,\n  windy"}
+        self.assertEqual(check_plan.athlete_notes(a), 'RPE 7/10  feel good  "legs heavy, windy"')
+
+    def test_nothing_written(self):
+        self.assertEqual(check_plan.athlete_notes({}), "")
+
+    def test_checkin_notes_keep_only_checkins(self):
+        notes = [{"name": "Check-in", "start_date_local": "2026-10-01T00:00:00",
+                  "description": "legs ok,\n slept badly"},
+                 {"name": "check-in ", "start_date_local": "2026-10-04T00:00:00"},
+                 {"name": "Holiday", "start_date_local": "2026-10-02T00:00:00"}]
+        self.assertEqual(check_plan.checkin_notes(notes),
+                         {"2026-10-01": "legs ok, slept badly", "2026-10-04": ""})
+
+
+class Roster(unittest.TestCase):
+    def test_template_counts_as_blank(self):
+        self.assertTrue(roster.is_blank_profile("## Who\n- Name / location:\n- Goals:\n"))
+
+    def test_filled_profile_is_not_blank(self):
+        self.assertFalse(roster.is_blank_profile("## Who\n- Name / location: Anna, Zurich\n"))
+
+    def test_shipped_template_is_blank(self):
+        text = (intervals_common.ROOT / "athlete" / "ATHLETE.md").read_text()
+        self.assertTrue(roster.is_blank_profile(text))
 
 
 if __name__ == "__main__":

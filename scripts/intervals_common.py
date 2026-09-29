@@ -3,14 +3,19 @@
 Credentials come from the environment or a .env file in the repo root (see .env.example).
 Never hard-code them. Get your key + athlete ID at intervals.icu -> Settings -> Developer.
 
-Failed requests are appended to logs/errors.log (no key, athlete ID redacted).
+Coach mode: with several athletes in athletes/roster.csv, set ATHLETE=<name> to pick one.
+The API key is always the coach's own; intervals.icu lets it act on athletes who accepted
+you as their coach. Without ATHLETE, everything works on athlete/ and INTERVALS_ATHLETE_ID.
+
+Failed requests are appended to logs/errors.log (no key, athlete IDs redacted).
 """
-import os, json, base64, datetime, urllib.request, urllib.error
+import os, csv, json, base64, datetime, urllib.request, urllib.error
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 API = "https://intervals.icu/api/v1"
 ERROR_LOG = ROOT / "logs" / "errors.log"
+ROSTER = ROOT / "athletes" / "roster.csv"
 
 
 def _load_dotenv():
@@ -30,10 +35,38 @@ _load_dotenv()
 
 
 def has_credentials():
-    return bool(os.environ.get("INTERVALS_API_KEY") and os.environ.get("INTERVALS_ATHLETE_ID"))
+    return bool(os.environ.get("INTERVALS_API_KEY")
+                and (os.environ.get("ATHLETE") or os.environ.get("INTERVALS_ATHLETE_ID")))
+
+
+def read_roster(path=None):
+    """Coach mode: {name: athlete_id} from athletes/roster.csv. Empty if there is no roster."""
+    path = Path(path or ROSTER)
+    if not path.exists():
+        return {}
+    with path.open() as f:
+        return {r["name"].strip(): r["athlete_id"].strip() for r in csv.DictReader(f) if r.get("name")}
+
+
+def _selected():
+    """The ATHLETE name, checked against the roster. None in single-athlete mode."""
+    name = os.environ.get("ATHLETE")
+    if name and name not in read_roster():
+        raise SystemExit(f"ATHLETE={name} is not in athletes/roster.csv. "
+                         "Add them with: python3 scripts/roster.py add <name> <athlete_id>")
+    return name
+
+
+def athlete_dir():
+    """Folder holding the current athlete's files: athletes/<name>/ in coach mode, else athlete/."""
+    name = _selected()
+    return ROOT / "athletes" / name if name else ROOT / "athlete"
 
 
 def athlete_id():
+    name = _selected()
+    if name:
+        return read_roster()[name]
     aid = os.environ.get("INTERVALS_ATHLETE_ID")
     if not aid:
         raise SystemExit("INTERVALS_ATHLETE_ID not set. Add it to .env (see .env.example).")
@@ -63,10 +96,11 @@ def _headers():
 
 
 def _redact(text):
-    """Strip the athlete ID and API key from anything we write to disk."""
+    """Strip the API key and every known athlete ID from anything we write to disk."""
     text = str(text)
+    ids = [os.environ.get("INTERVALS_ATHLETE_ID"), *read_roster().values()]
     for secret, label in ((os.environ.get("INTERVALS_API_KEY"), "{key}"),
-                          (os.environ.get("INTERVALS_ATHLETE_ID"), "{athlete}")):
+                          *((aid, "{athlete}") for aid in ids)):
         if secret:
             text = text.replace(secret, label)
     return text

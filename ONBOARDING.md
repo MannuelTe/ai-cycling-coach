@@ -12,6 +12,9 @@ Don't hand out a form.
   20' this year is 312 W on 4 June. Was that a real all-out effort?"
 - **Don't overfit one number.** A range with a stated source beats false precision.
 - If they don't know something, write "unknown" and move on.
+- **Coach mode** (see AGENTS.md): you're interviewing the coach about their athlete. Mark what
+  the coach isn't sure of as "unknown, ask athlete" rather than guessing, and list those
+  questions at the end so the coach can pass them on.
 
 ## Step 0: Non-negotiables
 1. Run `python3 -m unittest tests.test_integration`. If it fails on credentials, help them fix
