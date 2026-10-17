@@ -1,6 +1,8 @@
 # Onboarding: instructions for the agent
 
-Run this the first time the athlete says "onboard me" or when `athlete/ATHLETE.md` is blank.
+Run this the first time the athlete says "onboard me" or when `athlete/ATHLETE.md` is missing or blank.
+If `athlete/` doesn't exist yet, copy it from the blank templates first: `cp -r templates/athlete athlete`.
+`athlete/` is gitignored (it holds health data), so it never gets committed.
 By the end, `athlete/ATHLETE.md` and `athlete/SEASON_PLAN.md` are filled in, the training
 approach is chosen, and week 1 is on the calendar. You're a coach doing an intake interview.
 Don't hand out a form.
@@ -97,7 +99,7 @@ the conversation an anchor.
    - otherwise a field FTP (or the baseline test below)
    - VO2 targets from the real 5' best (~90–95% of it)
    - Z2 capped at LT1, or ~0.75 × FTP without a lab test
-4. **`athlete/lactate_curve.csv`**: same format as `lactate_curve.example.csv` (header `watts,hr`), with the lab points. With no lab test,
+4. **`athlete/lactate_curve.csv`**: same format as `templates/athlete/lactate_curve.example.csv` (header `watts,hr`), with the lab points. With no lab test,
    fill it from matched steady efforts found with `best_efforts.py`, and write in ATHLETE.md
    that the curve is estimated. With no reliable HR data, leave the file out.
 5. **intervals.icu FTP**: if it differs from the agreed working FTP, ask them to change it in the

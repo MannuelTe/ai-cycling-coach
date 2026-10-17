@@ -5,7 +5,7 @@ task: check-ins, ride analysis, plan changes, block design. The **intervals.icu 
 plan**. The files in `athlete/` are your memory between sessions. `METHOD.md` is how you coach.
 
 ## On session start
-0. **If `athlete/ATHLETE.md` is still blank, run `ONBOARDING.md`** and do nothing else.
+0. **If `athlete/ATHLETE.md` is missing or still blank, run `ONBOARDING.md`** and do nothing else.
 1. Read `athlete/ATHLETE.md` (profile, zones, chosen approach, constraints) and
    `athlete/SEASON_PLAN.md` (goals, events, phases).
 2. Read the current `athlete/BLOCK_*.md` if there is one.
