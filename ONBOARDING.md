@@ -60,14 +60,22 @@ the conversation an anchor.
 - Known trips, holidays or busy periods in the next months? (These become NOTE events.)
 - A rigid plan, or one that adapts week to week?
 
-**Round 3: Equipment**
-- Which bikes (road, gravel, TT)? Power meter (which one), and on which bikes? HR strap or wrist HR?
+**Round 3: Equipment and conditions**
+- Bikes: they own at least what their goals need (a gravel race means a gravel bike, a TT means a
+  TT bike), so confirm those from Round 1 and ask only about any others. Power meter (which one),
+  and on which bikes? HR strap or wrist HR?
 - Gravel bike, if they have one: power meter on it? Tyre width? Mostly gravel, or also road on
   gravel tyres? Without a power meter, gravel sessions are prescribed by HR and RPE.
-- Indoor trainer? Smart trainer with ERG? Zwift or similar? How much indoor riding can they stand?
+- Indoor trainer: smart with ERG, basic, or rollers? Zwift or similar? What's the longest indoor
+  ride they'll tolerate?
 - Which of these are at each place they'll live or travel to in the next months? (Goes in
   `athlete/locations.csv`, with their work days and hours.)
 - Head unit (Garmin/Wahoo)? Do they want workouts pushed to it?
+- Only if needed, not by default:
+  - What weather they'll ride outside in (rain, coldest °C). Skip it if they're very happy
+    indoors: a bad day simply goes on the trainer. Otherwise ask the first time a weather flag
+    from `check_plan.py` hits an outdoor session.
+  - Lights for riding in the dark. Ask the first time a session is flagged DARK.
 
 The same questions are the **quarterly equipment check-up** (AGENTS.md, session start): ask only
 what might have changed (new bike, power meter moved or broken, trainer gone), update ATHLETE.md

@@ -25,7 +25,8 @@ change. Every number gets a source and a date.
 - Power meter (which bikes):
 - Gravel bike (power meter? tyre width? use):
 - HR: strap / wrist / none
-- Indoor trainer:
+- Indoor trainer (type, and the longest indoor ride they'll tolerate):
+- Weather limits (rain? coldest °C?) and lights: <!-- asked only when needed, see ONBOARDING.md Round 3 -->
 - Head unit, workouts pushed to it?:
 - Where each is (by place and date): athlete/locations.csv
 - Equipment checked: <!-- YYYY-MM-DD. Re-checked every 90 days, see AGENTS.md -->

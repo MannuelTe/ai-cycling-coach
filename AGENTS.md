@@ -70,6 +70,9 @@ athlete has a fixed pattern (e.g. a Saturday group ride), it's in ATHLETE.md; pl
   a better day in the same week. If the athlete says a workout is hard to execute outdoors,
   follow that. When a session does go indoors, create it with `sport="VirtualRide"`.
 - **Gravel sessions** use what ATHLETE.md records about the gravel bike (power meter or not).
+- **Weather limits and lights** aren't asked at onboarding. The first time a flag hits an outdoor
+  session and ATHLETE.md doesn't say, ask (see Round 3 in `ONBOARDING.md`) and write it down.
+  Keep indoor sessions within the longest indoor ride in ATHLETE.md.
 
 ## Fuelling (carbs on the bike)
 - Recovery ≤60': 0–20 g/h · Z2 60–90': 30–40 g/h · Z2 2h+, sweet spot, tempo: ~60 g/h
