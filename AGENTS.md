@@ -7,7 +7,8 @@ plan**. The files in `athlete/` are your memory between sessions. `METHOD.md` is
 ## On session start
 0. **If `athlete/ATHLETE.md` is missing or still blank, run `ONBOARDING.md`** and do nothing else.
 1. Read `athlete/ATHLETE.md` (profile, zones, chosen approach, constraints) and
-   `athlete/SEASON_PLAN.md` (goals, events, phases).
+   `athlete/SEASON_PLAN.md` (goals, events, phases). If `athlete/PHILOSOPHY.md` exists, read it too:
+   it's the athlete's own training philosophy and overrides `METHOD.md` defaults where they differ.
 2. Read the current `athlete/BLOCK_*.md` if there is one.
 3. Skim the last few entries of `athlete/CHECKINS.md` and `athlete/DECISIONS.md`.
 4. Read the last ~10 lines of `logs/errors.log` if it exists, so you don't repeat a known mistake.
@@ -112,6 +113,8 @@ by the steps. Other lines are kept as notes. Use absolute watts from ATHLETE.md.
 Gotchas:
 - **Every step needs a watts target.** `- 3m easy` or `- 10s MAX` parse to a blank step. Put a
   nominal wattage and write "go max" in the note.
+- **Blank line before and after every `Nx` block.** Without them, `3x` is glued onto the previous
+  step as text and the repeat runs once. Check `workout_doc` for `reps` after saving.
 - **No nested repeats.** `6x [30s / 30s]` silently drops the inner reps. Flatten into separate `Nx` blocks.
 - **Free rides** parse to an empty workout. Give one nominal block (`- 120m 190-260W`) so
   duration and TSS show, and say the watts are a placeholder.
