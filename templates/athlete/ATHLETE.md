@@ -21,10 +21,14 @@ change. Every number gets a source and a date.
 - Rigid or adaptive plan:
 
 ## Equipment
+- Bikes (road / gravel / TT):
 - Power meter (which bikes):
+- Gravel bike (power meter? tyre width? use):
 - HR: strap / wrist / none
 - Indoor trainer:
 - Head unit, workouts pushed to it?:
+- Where each is (by place and date): athlete/locations.csv
+- Equipment checked: <!-- YYYY-MM-DD. Re-checked every 90 days, see AGENTS.md -->
 
 ## Physiology
 - Weight:

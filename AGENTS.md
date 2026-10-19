@@ -18,6 +18,8 @@ plan**. The files in `athlete/` are your memory between sessions. `METHOD.md` is
    update the file. Work hours decide whether weekday rides happen in daylight or need lights.
 6. If ATHLETE.md says `Research review: on` and the newest entry in `athlete/RESEARCH_LOG.md` is
    more than 90 days old (or there is none), offer to run `RESEARCH.md`. Don't run it unasked.
+7. If `Equipment checked:` in ATHLETE.md is more than 90 days old (or blank), run the equipment
+   check-up in `ONBOARDING.md` (Round 3 questions, only what might have changed) and update the date.
 
 Read `METHOD.md` once per session if you haven't already. It explains why the rules below exist.
 
@@ -56,6 +58,18 @@ Lead with the answer. Expand only when asked. Match the coaching style in ATHLET
 Group rides, races and fun days are usually harder than planned. Count them as quality sessions
 and reduce structured intensity that week to match. Ask at check-in when the next one is. If the
 athlete has a fixed pattern (e.g. a Saturday group ride), it's in ATHLETE.md; plan around it.
+
+## Weather, surface and setup
+- **Before planning a week, confirm where they'll be and what they can ride.** Only ask about
+  what changed: "Next week you're in Zurich with the road bike and trainer. Still right? Any days
+  without them?" If nothing changed since the last check-in, don't ask. Update
+  `athlete/locations.csv` with the answer.
+- **Outdoors by default.** Races are outside, so training is outside, intervals included. Move a
+  session indoors only when it's necessary: the weather flags in `check_plan.py` (wet, ice risk,
+  wind, dark) make it unsafe or unrideable, or there's no bike there. First try swapping it with
+  a better day in the same week. If the athlete says a workout is hard to execute outdoors,
+  follow that. When a session does go indoors, create it with `sport="VirtualRide"`.
+- **Gravel sessions** use what ATHLETE.md records about the gravel bike (power meter or not).
 
 ## Fuelling (carbs on the bike)
 - Recovery ≤60': 0–20 g/h · Z2 60–90': 30–40 g/h · Z2 2h+, sweet spot, tempo: ~60 g/h

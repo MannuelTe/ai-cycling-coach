@@ -61,9 +61,17 @@ the conversation an anchor.
 - A rigid plan, or one that adapts week to week?
 
 **Round 3: Equipment**
-- Power meter (which one), and on which bikes? HR strap or wrist HR?
+- Which bikes (road, gravel, TT)? Power meter (which one), and on which bikes? HR strap or wrist HR?
+- Gravel bike, if they have one: power meter on it? Tyre width? Mostly gravel, or also road on
+  gravel tyres? Without a power meter, gravel sessions are prescribed by HR and RPE.
 - Indoor trainer? Smart trainer with ERG? Zwift or similar? How much indoor riding can they stand?
+- Which of these are at each place they'll live or travel to in the next months? (Goes in
+  `athlete/locations.csv`, with their work days and hours.)
 - Head unit (Garmin/Wahoo)? Do they want workouts pushed to it?
+
+The same questions are the **quarterly equipment check-up** (AGENTS.md, session start): ask only
+what might have changed (new bike, power meter moved or broken, trainer gone), update ATHLETE.md
+and `locations.csv`, and set `Equipment checked:` to today.
 
 **Round 4: Physiology** (confirm the Step 1 numbers)
 - Weight now, and is it changing?
@@ -102,13 +110,16 @@ the conversation an anchor.
 4. **`athlete/lactate_curve.csv`**: same format as `templates/athlete/lactate_curve.example.csv` (header `watts,hr`), with the lab points. With no lab test,
    fill it from matched steady efforts found with `best_efforts.py`, and write in ATHLETE.md
    that the curve is estimated. With no reliable HR data, leave the file out.
-5. **intervals.icu FTP**: if it differs from the agreed working FTP, ask them to change it in the
+5. **`athlete/locations.csv`**: from `templates/athlete/locations.example.csv`, one row per place
+   and date range with the equipment there and their work days and hours. Set
+   `Equipment checked:` in ATHLETE.md to today.
+6. **intervals.icu FTP**: if it differs from the agreed working FTP, ask them to change it in the
    UI (Settings → sport settings). The API can't write it.
-6. **SEASON_PLAN.md**: goal, A/B/C events, phases planned back from the A event.
-7. **Calendar anchors**: POST each race (RACE) and each trip or no-bike period (NOTE).
-8. **DECISIONS.md**: log the approach, working FTP and zones, the season goal and the block
+7. **SEASON_PLAN.md**: goal, A/B/C events, phases planned back from the A event.
+8. **Calendar anchors**: POST each race (RACE) and each trip or no-bike period (NOTE).
+9. **DECISIONS.md**: log the approach, working FTP and zones, the season goal and the block
    design, each with its reason.
-9. **CHECKINS.md**: first entry, "Onboarding", with the baseline (CTL, weekly hours, key numbers).
+10. **CHECKINS.md**: first entry, "Onboarding", with the baseline (CTL, weekly hours, key numbers).
 
 ## Step 4: Baseline test (if needed)
 If there's no lab test and no recent all-out effort they trust, week 1 includes a field test.
