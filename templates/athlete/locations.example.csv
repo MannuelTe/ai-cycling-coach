@@ -1,0 +1,3 @@
+from,to,place,lat,lon,trainer,road,gravel,work_days,work_hours
+2026-01-01,2026-03-31,Zurich,47.37,8.54,yes,yes,no,Mon-Fri,08:30-17:30
+2026-04-01,2026-04-10,Girona,41.98,2.82,no,yes,yes,none,

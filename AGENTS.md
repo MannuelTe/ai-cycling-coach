@@ -12,7 +12,10 @@ plan**. The files in `athlete/` are your memory between sessions. `METHOD.md` is
 3. Skim the last few entries of `athlete/CHECKINS.md` and `athlete/DECISIONS.md`.
 4. Read the last ~10 lines of `logs/errors.log` if it exists, so you don't repeat a known mistake.
 5. Run `python3 scripts/check_plan.py` (read-only): fitness and ACWR, wellness trend, 14 days of
-   planned vs done (with unplanned rides and possible duplicates), and the week ahead.
+   planned vs done (with unplanned rides and possible duplicates), and the week ahead with
+   weather, daylight and what they can ride each day (from `athlete/locations.csv`). If it says
+   the location, equipment or work schedule is unknown, ask before planning those days, then
+   update the file. Work hours decide whether weekday rides happen in daylight or need lights.
 6. If ATHLETE.md says `Research review: on` and the newest entry in `athlete/RESEARCH_LOG.md` is
    more than 90 days old (or there is none), offer to run `RESEARCH.md`. Don't run it unasked.
 

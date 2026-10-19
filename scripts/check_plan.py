@@ -1,7 +1,8 @@
 """Daily check-in helper (read-only). Rolling coach view — not tied to any block.
 
 Shows: fitness snapshot + wellness trend, day-by-day planned vs actual for the last
-2 weeks (INCLUDING unplanned rides and possible duplicates), and the week ahead.
+2 weeks (INCLUDING unplanned rides and possible duplicates), and the week ahead with
+weather, daylight and available equipment (see weather.py).
 
 Usage:
     python3 scripts/check_plan.py            # status as of today
@@ -12,6 +13,7 @@ Needs INTERVALS_API_KEY and INTERVALS_ATHLETE_ID in .env (see .env.example).
 import sys, csv, datetime
 from pathlib import Path
 from intervals_common import athlete_get, ROOT
+import weather
 
 LOOKBACK_DAYS = 14
 LOOKAHEAD_DAYS = 7
@@ -141,14 +143,30 @@ def main():
                 print("              ** POSSIBLE DUPLICATE above — verify before trusting CTL/ATL **")
         d += datetime.timedelta(days=1)
 
-    # Week ahead
-    print(f"\nNEXT {LOOKAHEAD_DAYS} DAYS (planned):")
-    d = today + datetime.timedelta(days=1)
+    # Week ahead, with weather, daylight and what's available on each day
+    print(f"\nNEXT {LOOKAHEAD_DAYS} DAYS (planned, weather):")
+    first = today + datetime.timedelta(days=1)
+    locations = weather.load_locations()
+    ahead = weather.days_ahead(first, end, locations) if locations else {}
+    if not locations:
+        print("  (no athlete/locations.csv: ask where they'll be, what they can ride there"
+              " and when they work, then fill it in from templates/athlete/locations.example.csv)")
+    d = first
     any_up = False
     while d <= end:
-        for e in plan_by_date.get(d.isoformat(), []):
+        plans = plan_by_date.get(d.isoformat(), [])
+        for e in plans:
             print(f"  {d}  {e['name']} ({load_of(e)} TSS)")
             any_up = True
+        if not plans:
+            print(f"  {d}  (nothing planned)")
+        if locations:
+            loc, w = ahead[d]
+            # Flag against the longest outdoor session that day; indoor sessions aren't flagged.
+            outdoor = [e for e in plans if not (e.get("indoor") or e.get("type") == "VirtualRide")]
+            mins = max(((e.get("moving_time") or 0) // 60 for e in outdoor), default=None)
+            indoor = bool(plans) and not outdoor
+            print(f"              {weather.describe(d, loc, w, mins, indoor)}")
         d += datetime.timedelta(days=1)
     if not any_up:
         print("  (nothing planned — the calendar needs the next block)")
